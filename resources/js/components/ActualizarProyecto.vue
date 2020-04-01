@@ -1,0 +1,323 @@
+<template>
+     <main class="main ">
+         <ol class="breadcrumb">
+        <li class="breadcrumb-item">Home</li>
+        <li class="breadcrumb-item"><a href="#">Admin</a></li>
+        <li class="breadcrumb-item active">Dashboard</li>
+    </ol>
+         <div class="container-fluid">
+             <div>
+                  <center>  <h1>Actualizar Proyecto</h1></center>
+
+             </div>
+             <br><br>
+
+<div class="container">
+        <div class="row" v-if="array_contenido.length!=0">
+                    <div class="col-2">
+
+                    </div>
+                    <div class="col-8" v-if="array_contenido.length!=0">
+                            <div  class="form-group row" >
+                            <label class="col-md-3 form-control-label" for="text-input">Contenido</label>
+                            <div class="col-md-3">
+                       <select class="custom-select" v-model="contenido_id" ref="seleccionado2" >
+
+                                    <option   v-for="contenido in array_contenido" :key="contenido.id"
+                                     :value="contenido.id"  v-text="contenido.titulo"></option>
+
+
+                        </select>
+                            </div>
+                             <div class="col-md-3">
+
+
+                                <input type="submit"  @click="informacion()"  class="btn btn-primary" value="Actualizar Contenido">
+
+
+
+                            </div>
+                            <div class="col-md-2">
+
+
+                                <input type="submit"  @click="eliminar()"  class="btn btn-primary" value="Eliminar">
+
+
+
+                            </div>
+                            </div>
+                    </div>
+                    <div class="col-2">
+
+                    </div>
+
+             </div>
+                         <form  v-if="array_contenido.length!=0" action="" method="post" enctype="multipart/form-data" class="form-horizontal">
+                        <div class="form-group row">
+                            <label class="col-md-3 form-control-label" for="text-input">Titulo</label>
+                            <div class="col-md-9">
+                                <input type="text" v-model="titulo" class="form-control" placeholder="Titulo " >
+                                <span class="help-block">(*) Ingrese el titulo </span>
+                            </div>
+                        </div>
+ <div class="col-8" v-if="array_contenido2.length!=0">
+                            <div  class="form-group row" >
+                            <label class="col-md-3 form-control-label" for="text-input">Semillero</label>
+                            <div class="col-md-3">
+                       <select v-model="semillero_id" class="custom-select" ref="seleccionado" >
+
+                                    <option v-for="contenido in array_contenido2" :key="contenido.id"
+                                     :value="contenido.id"  v-text="contenido.titulo"></option>
+
+
+                        </select>
+                            </div>
+
+                            <div class="col-md-2">
+
+
+
+
+                            </div>
+                            </div>
+                    </div>
+
+
+
+
+                    </form>
+
+
+
+                     <div class="col-2">
+
+                     </div>
+                 </div>
+
+ <div class="form-group row" v-if="array_contenido.length!=0">
+
+                                    <vue-editor class="hola" :customModules="customModulesForEditor"  v-model="content"> </vue-editor>
+
+
+                        </div>
+                            <br><br>
+                            <div class="row" v-if="array_contenido.length!=0">
+                                <div class="col-4"></div>
+                            <div class="col-4">
+                                <input type="submit" @click="registrarServicio()" class="btn btn-primary" value="Actualizar Contenido">
+                            </div>
+                            <div class="col-4"></div>
+                            </div>
+                             <div v-if="array_contenido.length==0">
+               <h1>No hay Proyectos</h1>
+         </div>
+                            <br><br><br><br>
+
+
+    </div>
+     </main>
+</template>
+<script>
+
+const axios= require('axios');
+import { VueEditor } from "vue2-editor";
+    export default {
+        components: { VueEditor },
+
+       data(){
+           return{
+               content: "<h1>Contenido</h1>",
+            array_contenido:[],
+            array_contenido2:[],
+            contenido_id:'',
+            titulo:'',
+            descripcion:'',
+            image:'',
+            url:'',
+            fecha:'',
+            lugar:'',
+            semillero_id:''
+
+           }
+       },
+       methods:{
+ semilleros(){
+                let me= this;
+                 axios.post('admin/semilleros'
+                 ).then(function(response){
+                    me.array_contenido2=response.data;
+
+
+                                    }).catch(function(error){
+                                            console.log(error);
+                                    });
+            },
+            traercontenido(){
+                let me= this;
+                 axios.post('p'
+                 ).then(function(response){
+                    me.array_contenido=response.data;
+
+
+                                    }).catch(function(error){
+                                            console.log(error);
+                                    });
+            },
+            imageChanged(e){
+
+                                var filereader= new FileReader();
+                                filereader.readAsDataURL(e.target.files[0]);
+                                filereader.onload = (e)=>{
+                                        this.image= filereader.result;
+                                };
+
+                                const files = e.target.files;
+
+                                this.image=files;
+            },
+            informacion(){
+
+
+               let me= this;
+               me.contenido_id=this.$refs.seleccionado2.value;
+               console.log("aqui" + me.contenido_id);
+                 axios.post('admin/pro',{'id':me.contenido_id}
+                 ).then(function(response){
+                     console.log(response);
+                    me.titulo=response.data['titulo'];
+                    me.semillero_id=response.data['semillero_id'];
+                    me.content=response.data['contenido'];
+
+
+
+
+
+                                    }).catch(function(error){
+                                            console.log(error);
+                                    });
+
+            },
+            eliminar(){
+let me = this;
+
+
+ swal.fire({
+  title: '¿Está seguro?',
+  text: "¿Quieres borrarlo?",
+  type: 'warning',
+  showCancelButton: true,
+  confirmButtonColor: '#3085d6',
+  cancelButtonColor: '#d33',
+  confirmButtonText: 'si, Borralo!'
+}).then((result) => {
+  if (result.value) {
+      axios.post('eliminarProyecto',{
+
+                    'id':me.contenido_id
+                })
+                .then(function(response){
+
+
+                        console.log(response.data);
+                          swal.fire(
+      'Borrado!',
+      'Tu Proyecto ha sido borrado.',
+      'success'
+    )
+   location.reload();
+    }).catch(function(error){
+                                            console.log(error);
+                                    });
+
+
+  }
+})
+
+
+
+
+
+            },
+
+            registrarServicio(){
+
+                                    let me = this;
+                                if(this.titulo==''){
+
+                                }else{
+                                axios.post('actualizarProyecto',{
+                                    'id':this.contenido_id,
+                                     'semillero_id':this.semillero_id,
+                                    'titulo':this.titulo,
+                                    'contenido':this.content
+
+
+                                }).then(function(response){
+
+                                     swal.fire('Proyecto actualizado','','success');
+                                      me.traercontenido();
+                                      me.informacion();
+
+                                    }).catch(function(error){
+                                        console.log(error);
+                                    });
+                            }
+        },
+            actualizar(){
+               let me= this;
+
+                 axios.post('actualizarContenido',
+                 {'id':me.contenido_id,
+                 'titulo':me.titulo,
+                 'contenido':me.content}
+                 ).then(function(response){
+                 //   location.reload();
+                   swal.fire('Contenido Actualizado','','success');
+                            me.traercontenido();
+
+
+                                    }).catch(function(error){
+                                            console.log(error);
+                                    });
+            }
+        },
+
+        mounted(){
+this.traercontenido();
+this.semilleros();
+
+        },created(){
+            this.traercontenido();
+        }
+    }
+</script>
+<style >
+.mostrar{
+   display: list-item !important;
+   opacity: 1 !important;
+   position: absolute !important;
+   background-color: #3c29297a !important;
+}
+.modal-content{
+    width: 100% !important;
+    position:absolute !important;
+
+}
+.imagen{
+    width: 400px;
+    height: 200px;
+}
+
+.modal-body{
+    height: 500px;
+}
+.boxContenedor {
+
+
+ overflow : auto;
+}
+.hola{
+    width: 100%;
+    height: 400px;
+}
+</style>
